@@ -3,7 +3,7 @@ from sqlalchemy import String, DateTime, Integer,Boolean, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from app.extensions import db
 
-class Profile:
+class Profile(db.Model):
     __tablename__ = "profiles"
     
     id = mapped_column(Integer, primary_key=True)

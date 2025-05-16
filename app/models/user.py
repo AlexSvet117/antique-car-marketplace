@@ -19,6 +19,7 @@ class User(db.Model):
 
     profile = relationship("Profile", back_populates="user")
     listings = relationship("Listing", back_populates="owner")
+    wishlist_items = relationship("WishlistItem", back_populates="user")
 
     def serialize(self):
         return {

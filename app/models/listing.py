@@ -3,7 +3,7 @@ from sqlalchemy import String, DateTime, Integer, Boolean, ForeignKey, Enum, Tex
 from sqlalchemy.orm import mapped_column, relationship
 from app.extensions import db
 
-class Listing:
+class Listing(db.Model):
     __tablename__ = "listings"
     
     id = mapped_column(Integer, primary_key=True)
@@ -19,7 +19,7 @@ class Listing:
     transportation_cost = mapped_column(Numeric,(10,2), nullable=False)
     condition = mapped_column(String(255), nullable=True)
     color = mapped_column(String(255), nullable=True)
-    is_featured = mapped_column(Boolean)
+    is_featured = mapped_column(Boolean, nullable=True)
     status = mapped_column(Enum ('active', 'pending', 'sold', 'inactive'), nullable=False)
     inspection = mapped_column(Enum ('inspected','as is'), nullable=False)
     address = mapped_column(String(255), nullable=True)
@@ -34,6 +34,8 @@ class Listing:
                                onupdate=lambda:datetime.now(timezone.utc), nullable=False)
     
     owner = relationship("User", back_populates="listings")
+    images = relationship("ListingImage", back_populates="listing", cascade="all, delete-orphan")
+    wishlist_items = relationship("WishlistItem", back_populates="listing")
 
     def serialize(self):
         return {
