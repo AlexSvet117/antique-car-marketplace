@@ -8,7 +8,7 @@ class WishlistItem(db.Model):
     
     id = mapped_column(Integer, primary_key=True)
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
-    listing_id = mapped_column(Integer, ForeignKey("listing.id"), nullable=False)
+    listing_id = mapped_column(Integer, ForeignKey("listings.id"), nullable=False)
     created_at = mapped_column(DateTime, default=lambda:datetime.now(timezone.utc), nullable=False)
 
     listing = relationship("Listing", back_populates="wishlist_items")

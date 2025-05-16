@@ -7,7 +7,7 @@ class ListingImage(db.Model):
     __tablename__ = "listing_images"
     
     id = mapped_column(Integer, primary_key=True)
-    owner_id = mapped_column(Integer, ForeignKey("listing.id"), nullable=False)
+    owner_id = mapped_column(Integer, ForeignKey("listings.id"), nullable=False)
     image_url = mapped_column(String(255), nullable=True)
     claudinary_public_id = mapped_column(String(255), nullable=False)
     is_primary = mapped_column(Boolean, default=False, nullable=False)
