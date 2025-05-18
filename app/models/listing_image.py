@@ -19,7 +19,7 @@ class ListingImage(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "owner_id": self.owner_id,
+            "listing_id": self.listing_id,
             "image_url": self.image_url,
             "claudinary_public_id": self.claudinary_public_id,
             "is_primary": self.is_primary,
