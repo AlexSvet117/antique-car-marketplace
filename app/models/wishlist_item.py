@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
-from sqlalchemy import String, DateTime, Integer, Boolean, ForeignKey, Enum, Text, Numeric, Float
+from sqlalchemy import String, DateTime, Integer, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import mapped_column, relationship
 from app.extensions import db
 
 class WishlistItem(db.Model):
     __tablename__ = "wishlist_item"
-    
+    __table_args__ = (UniqueConstraint("user_id", "listing_id", name="uix_user_listing"),)
     id = mapped_column(Integer, primary_key=True)
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     listing_id = mapped_column(Integer, ForeignKey("listings.id"), nullable=False)

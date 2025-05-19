@@ -25,8 +25,8 @@ class ListingImageRepository:
     @staticmethod
     def get_by_listing(listing_id: int) -> List[ListingImage]:
         stmt = select(ListingImage).where(ListingImage.listing_id == listing_id)
-        result = db.session.execute(stmt)
-        return list(result.scalars().all())
+        results = db.session.execute(stmt)
+        return list(results.scalars().all())
     
     @staticmethod
     def get_primary_image(listing_id: int) -> Optional[ListingImage]:
