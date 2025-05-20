@@ -3,6 +3,8 @@ from app.config import get_config
 from app.extensions import db, migrate, cors
 from app.admin import init_admin
 from app.controllers.auth_controller import auth_bp
+from app.controllers.user_controller import user_bp
+from app.controllers.listing_controller import listing_bp
 from app.error_handlers import register_error_handlers
 
 def create_app(env: str | None = None) -> Flask:
@@ -19,6 +21,8 @@ def create_app(env: str | None = None) -> Flask:
 
     # register blueprints
     app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
+    app.register_blueprint(user_bp, url_prefix="/api/v1")
+    app.register_blueprint(listing_bp, url_prefix="/api/v1")
 
     # health check
     @app.get("/ping")

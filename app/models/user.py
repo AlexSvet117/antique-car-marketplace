@@ -29,5 +29,6 @@ class User(db.Model):
             "is_active": self.is_active,
             "is_admin": self.is_admin,
             "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "updated_at": self.updated_at,
+            "password_debug": self.password
         }
