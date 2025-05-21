@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.user_service import UserService
 from app.utils.validators import is_valid_email, is_valid_username, is_valid_password
+import cloudinary.uploader
 
 
 user_bp = Blueprint("users", __name__)
@@ -68,3 +69,28 @@ def update_user_profile(user_id: int):
                         "profile": profile.serialize()})
     except ValueError as e:
         return jsonify({"error": "Something went wrong", "message": str(e)})
+    
+
+@user_bp.route('/users/<int:user_id>/profile/image', methods=["PATCH"])
+def update_user_profile_image(user_id: int):
+    profile = UserService.get_profile_by_user_id(user_id)
+    if not profile:
+        return ({"error": "Not Found"}), 404
+    if not request.content_type.startswith("multipart/form-data"):
+        return jsonify({"error": "Content type should be multipart form data"})
+    image_file = request.files.get("image")
+    if not image_file:
+        return ({"error": "Image not provided"}), 404
+    
+    if profile.cloudinary_public_id:
+        cloudinary.uploader.destroy(profile.cloudinary_public_id)
+
+    uploaded_result = cloudinary.uploader.upload(
+        image_file,
+        folder="Profile Images"
+    )
+    profile.avatar_url = uploaded_result["secure_url"]
+    profile.cloudinary_public_id = uploaded_result["public_id"]
+    UserService.update_user_profile(user_id, {"avatar_url":profile.avatar_url, "cloudinary_puclic_id":profile.cloudinary_public_id})
+    
+    return jsonify({"message": "Successfully uploaded image", "profile": profile.serialize()})
