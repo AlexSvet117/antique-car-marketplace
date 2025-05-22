@@ -26,7 +26,7 @@ class ListingImageRepository:
 
     @staticmethod
     def get_by_id(image_id: int) -> Optional[ListingImage]:
-        stmt = select(ListingImage).where(ListingImage==image_id)
+        stmt = select(ListingImage).where(ListingImage.id==image_id)
         result = db.session.execute(stmt)
         return result.scalars().first()
     

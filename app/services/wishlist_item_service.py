@@ -1,0 +1,32 @@
+from app.repositories.listing_repository import ListingRepository
+from app.models.listing import Listing
+from app.models.listing_image import ListingImage
+from app.repositories.wishlistitem_repository import WishlistItemRepository
+from app.repositories.user_repository import UserRepository
+from app.models.wishlist_item import WishlistItem
+from typing import Optional, List, Dict, Any
+
+class WishlistItemService:
+
+    @staticmethod
+    def add_to_wishlist(user_id: int, listing_id: int) -> WishlistItem:
+        listing = ListingRepository.get_by_id(listing_id)
+        if not listing:
+            raise  ValueError(f"Listing with id {listing_id} not found")
+        return WishlistItemRepository.create(user_id=user_id, listing_id=listing_id)
+    
+    @staticmethod
+    def remove_item_from_wishlist(user_id: int, listing_id: int) -> bool:
+        return WishlistItemRepository.get_by_user_and_listing(user_id, listing_id)
+    
+    @staticmethod
+    def get_wishlist_items_by_user_id(user_id: int):
+        user = UserRepository.get_by_id(user_id)
+        if not user:
+            return None
+        return WishlistItemRepository.get_by_user(user_id)
+
+    @staticmethod
+    def get_item_by_id(item_id: int) -> Optional[WishlistItem]:
+        return WishlistItemRepository.get_by_id(item_id)
+        

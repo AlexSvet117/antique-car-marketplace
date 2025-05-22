@@ -124,16 +124,19 @@ def update_image(listing_id: int):
 @listing_bp.route("/listings/<int:listing_id>/images/<int:image_id>", methods=["DELETE"])
 def delete_image(listing_id: int, image_id: int):
     listing = ListingService.get_listing_by_id(listing_id)
-    image_to_delete = ListingService.get_listing_image_by_id(image_id)
-
     if not listing:
         return jsonify({"message": f"No such listing id: {listing_id}"}), 404
+    
+    image_to_delete = ListingService.get_listing_image_by_id(image_id)
+    
     if not image_to_delete:
         return jsonify({"message": f"No such image id {image_id}"}), 404
-    
-    cloudinary.uploader.destroy(image_to_delete.claudinary_public_id)
 
-    result = ListingService.delete_listing_image(image_id)
+    result = ListingService.delete_listing_image(image_id, listing.owner_id)
+    if not result:
+        return jsonify({"error": " Access denied or image not found"})
+
+    cloudinary.uploader.destroy(image_to_delete.claudinary_public_id)
     if result:
         return jsonify({"message": f"Image with id {image_id} successfully deleted"}), 200
     else:

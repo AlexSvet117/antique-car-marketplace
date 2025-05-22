@@ -68,9 +68,14 @@ class ListingService:
         return ListingImageRepository.get_by_id(image_id)
     
     @staticmethod
-    def delete_listing_image(image_id: str) -> bool:
+    def delete_listing_image(image_id: str, owner_id: int) -> bool:
 
         image = ListingImageRepository.get_by_id(image_id)
         if not image: 
             return False
+        
+        listing = ListingRepository.get_by_id(image.listing_id)
+        if not listing or listing.owner_id != owner_id:
+            return False
+        
         return ListingImageRepository.delete(image)
