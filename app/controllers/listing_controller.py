@@ -132,4 +132,10 @@ def delete_image(listing_id: int, image_id: int):
         return jsonify({"message": f"No such image id {image_id}"}), 404
     
     cloudinary.uploader.destroy(image_to_delete.claudinary_public_id)
+
+    result = ListingService.delete_listing_image(image_id)
+    if result:
+        return jsonify({"message": f"Image with id {image_id} successfully deleted"}), 200
+    else:
+        return jsonify({"error": "Something went wrong"}), 400
     
