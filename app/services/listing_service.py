@@ -53,7 +53,7 @@ class ListingService:
 
         listing = ListingRepository.get_by_id(listing_id)
         if not listing:
-            raise ValueError(f"Listing with id {listing_id} not found ")
+            return None
         image = ListingImageRepository.create(
             listing_id=listing_id,
             image_url=image_url,
@@ -62,3 +62,15 @@ class ListingService:
             caption=caption
         )
         return image
+    
+    @staticmethod
+    def get_listing_image_by_id(image_id: int) -> Optional[ListingImage]:
+        return ListingImageRepository.get_by_id(image_id)
+    
+    @staticmethod
+    def delete_listing_image(image_id: str) -> bool:
+
+        image = ListingImageRepository.get_by_id(image_id)
+        if not image: 
+            return False
+        return ListingImageRepository.delete(image)

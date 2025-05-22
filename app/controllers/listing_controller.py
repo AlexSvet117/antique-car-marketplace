@@ -118,4 +118,18 @@ def update_image(listing_id: int):
     if listing_image:
         return jsonify(listing_image.serialize()), 201
     else:
-        return jsonify({"error": "Could not upload the iamge due to non-existent listing"})
+        return jsonify({"error": "Could not upload the iamge due to non-existent listing"}), 404
+    
+
+@listing_bp.route("/listings/<int:listing_id>/images/<int:image_id>", methods=["DELETE"])
+def delete_image(listing_id: int, image_id: int):
+    listing = ListingService.get_listing_by_id(listing_id)
+    image_to_delete = ListingService.get_listing_image_by_id(image_id)
+
+    if not listing:
+        return jsonify({"message": f"No such listing id: {listing_id}"}), 404
+    if not image_to_delete:
+        return jsonify({"message": f"No such image id {image_id}"}), 404
+    
+    cloudinary.uploader.destroy(image_to_delete.claudinary_public_id)
+    
