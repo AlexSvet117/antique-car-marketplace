@@ -2,12 +2,13 @@ from app.extensions import db
 from app.models.user import User
 from sqlalchemy import select
 from typing import Optional, List
+from werkzeug.security import generate_password_hash
 
 class UserRepository:
     @staticmethod
     def create_user(email: str, username: str, password: str, is_admin: bool = False) -> User:
         """Create new user"""
-        user = User(email=email, username=username, password=password, is_admin=is_admin) # type: ignore
+        user = User(email=email, username=username, password=generate_password_hash(password), is_admin=is_admin) # type: ignore
         db.session.add(user)
         db.session.commit()
         return user

@@ -2,11 +2,13 @@ from flask import Blueprint, request, jsonify
 from app.services.user_service import UserService
 from app.utils.validators import is_valid_email, is_valid_username, is_valid_password
 import cloudinary.uploader
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 user_bp = Blueprint("users", __name__)
 
 @user_bp.route("/users/<int:user_id>", methods = ["GET"])
+@jwt_required()
 def get_user_by_id(user_id: int):
     user = UserService.get_user_by_id(user_id)
     if user:
@@ -16,6 +18,7 @@ def get_user_by_id(user_id: int):
 
 
 @user_bp.route("/users/<int:user_id>", methods = ["PUT"])
+@jwt_required()
 def update_user_by_id(user_id: int):
 
 
@@ -45,6 +48,7 @@ def update_user_by_id(user_id: int):
     
 
 @user_bp.route("/users/<int:user_id>/profile", methods=["GET"])
+@jwt_required()
 def get_user_profile(user_id: int):
     profile = UserService.get_profile_by_user_id(user_id)
     if profile:
@@ -54,6 +58,7 @@ def get_user_profile(user_id: int):
     
 
 @user_bp.route("/users/<int:user_id>/profile", methods=["PUT"])
+@jwt_required()
 def update_user_profile(user_id: int):
     profile = UserService.get_profile_by_user_id(user_id)
     if not profile:
@@ -72,6 +77,7 @@ def update_user_profile(user_id: int):
     
 
 @user_bp.route('/users/<int:user_id>/profile/image', methods=["PATCH"])
+@jwt_required()
 def update_user_profile_image(user_id: int):
     profile = UserService.get_profile_by_user_id(user_id)
     if not profile:
