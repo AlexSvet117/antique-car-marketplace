@@ -14,6 +14,11 @@ def create_listing():
         return jsonify({"error": "Bad Request", "message" : "Data as JSON not provided"}), 400
     if "owner_id" not in data or not data.get("owner_id"):
         return jsonify({"error": "Bad Request", "message" : "owner_id as JSON not provided"}), 400
+    
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == data.get("owner_id"):
+        return jsonify({"error": "You are not authorized to access this account."})
+
     if "make" not in data or not data.get("make"):
         return jsonify({"error": "Bad Request", "message" : "make as JSON not provided"}), 400
     if "model" not in data or not data.get("model"):
@@ -48,6 +53,7 @@ def get_all_listings():
 @jwt_required()
 def get_listing_by_id(listing_id: int):
     listing = ListingService.get_listing_by_id(listing_id)
+
     if listing:
         return jsonify(listing.serialize()), 200
     else: 
@@ -75,6 +81,10 @@ def update_listing(listing_id: int):
         return jsonify({"error": "Bad Request", "message" : "Data as JSON not provided"}), 400
     if "owner_id" in data:
         return jsonify({"error": "Bad Request", "message" : "Not allowed to change the owner id"}), 400
+    
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == data.get("owner_id"):
+        return jsonify({"error": "You are not authorized to access this account."})
 
     try: 
         listing = ListingService.update_listing_by_id(listing_id=listing_id, **data)
@@ -86,6 +96,14 @@ def update_listing(listing_id: int):
 @listing_bp.route("/listings/<int:listing_id>", methods=["DELETE"])
 @jwt_required()
 def delete_listing(listing_id: int):
+
+    listing = ListingService.get_listing_by_id(listing_id)
+    if not listing:
+        return jsonify({"error": f"Listing with id {listing_id} not found"})
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == listing.owner_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+
     try:
         success = ListingService.delete_listing_by_id(listing_id)
         if success:
@@ -102,6 +120,11 @@ def update_image(listing_id: int):
     listing = ListingService.get_listing_by_id(listing_id)
     if not listing:
         return jsonify({"error": f"Listing with id {listing_id} not found."}), 404
+    
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == listing.owner_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+    
     if not request.content_type.startswith("multipart/form-data"):
         return jsonify({"error": "Content type should be multipart/form-data"})
     
@@ -134,6 +157,10 @@ def delete_image(listing_id: int, image_id: int):
     listing = ListingService.get_listing_by_id(listing_id)
     if not listing:
         return jsonify({"message": f"No such listing id: {listing_id}"}), 404
+    
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == listing.owner_id:
+        return jsonify({"error": "You are not authorized to access this account."})
     
     image_to_delete = ListingService.get_listing_image_by_id(image_id)
     

@@ -10,6 +10,11 @@ user_bp = Blueprint("users", __name__)
 @user_bp.route("/users/<int:user_id>", methods = ["GET"])
 @jwt_required()
 def get_user_by_id(user_id: int):
+
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == user_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+
     user = UserService.get_user_by_id(user_id)
     if user:
         return jsonify(user.serialize()), 200
@@ -20,11 +25,6 @@ def get_user_by_id(user_id: int):
 @user_bp.route("/users/<int:user_id>", methods = ["PUT"])
 @jwt_required()
 def update_user_by_id(user_id: int):
-
-
-    user = UserService.get_user_by_id(user_id)
-    if not user: 
-        return jsonify({"error": "Not found","message" : f"User with id: {user_id}, not found"}), 404
     
     data = request.get_json()
     if not data:
@@ -50,6 +50,11 @@ def update_user_by_id(user_id: int):
 @user_bp.route("/users/<int:user_id>/profile", methods=["GET"])
 @jwt_required()
 def get_user_profile(user_id: int):
+
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == user_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+
     profile = UserService.get_profile_by_user_id(user_id)
     if profile:
         return jsonify(profile.serialize()), 200
@@ -60,6 +65,11 @@ def get_user_profile(user_id: int):
 @user_bp.route("/users/<int:user_id>/profile", methods=["PUT"])
 @jwt_required()
 def update_user_profile(user_id: int):
+
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == user_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+
     profile = UserService.get_profile_by_user_id(user_id)
     if not profile:
         return jsonify({"error" : "404 Not Found", "message": f"Profile with id {user_id} not found"}), 404
@@ -79,6 +89,11 @@ def update_user_profile(user_id: int):
 @user_bp.route('/users/<int:user_id>/profile/image', methods=["PATCH"])
 @jwt_required()
 def update_user_profile_image(user_id: int):
+
+    user_id_jwt = int(get_jwt_identity())
+    if not user_id_jwt == user_id:
+        return jsonify({"error": "You are not authorized to access this account."})
+     
     profile = UserService.get_profile_by_user_id(user_id)
     if not profile:
         return ({"error": "Not Found"}), 404
